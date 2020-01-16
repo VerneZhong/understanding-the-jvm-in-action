@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
  * VM Args: -XX:PermSize=10m -XX:MaxPermSize=10m
  * Jdk8 VM Args: -XX:MetaspaceSize=10m -XX:MaxMetaspaceSize=10m
  * 主流的框架，比如Spring，在对类进行增强时，都会使用到CGLib这类字节码技术，增强到类越多，就需要越大到方法区来保证动态生成到Class可以加载到内存
+ *
  * @author Mr.zxb
  * @date 2020-01-16 16:17
  */
