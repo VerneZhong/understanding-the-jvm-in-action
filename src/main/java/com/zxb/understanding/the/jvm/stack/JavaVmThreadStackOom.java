@@ -21,7 +21,12 @@ public class JavaVmThreadStackOom {
     public void stackLeakByThread() {
         while (true) {
             i++;
-            new Thread(() -> dontStop()).start();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    dontStop();
+                }
+            }).start();
         }
     }
 
