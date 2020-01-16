@@ -15,8 +15,9 @@ public class RuntimeConstantPoolAction {
 
         System.out.println("str.intern() == str: " + (str.intern() == str));
 
-        String str2 = new StringBuilder("Ja").append("va").toString();
-
+        String str2 = new StringBuilder("ja").append("va").toString();
+        // intern()方法会把首次遇到的字符串实例复制到永久代的字符串常量池中存储
+        // 至于为什么第二个结果是false，是因为 java字符串已经被放进了常量池，在sun.misc.Version的launcher_name里
         System.out.println("str2.intern() == str2: " + (str2.intern() == str2));
 
     }
