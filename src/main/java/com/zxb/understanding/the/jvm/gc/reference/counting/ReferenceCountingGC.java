@@ -1,4 +1,4 @@
-package com.zxb.understanding.the.jvm.gc;
+package com.zxb.understanding.the.jvm.gc.reference.counting;
 
 /**
  * 垃圾收集器 {@link Runtime#gc()} --引用计数算法模拟
