@@ -54,11 +54,37 @@ public class TestSerialGCAllocation {
         allocation = new byte[4 * _1MB];
     }
 
+    /**
+     * 长期存活的对象进入老年代
+     * HotSpot虚拟机大多数收集器都采用了分代收集来管理堆内存，内存回收根据对象年龄来区分对象存活在哪个分代中，
+     * 虚拟机给每个对象定义来一个对象年龄（Age）计数器，存储在对象头中，对象通常在Eden区诞生，如果经过了一次MinorGC后仍然存活，
+     * 并且能够被Survivor容纳的话，该对象会被移动到Survivor空间中，并将其对象年龄设为1岁。对象没熬过一次MinorGC，年龄就增长
+     * 一岁，当它的年龄增加到一定程度（默认15），就会被晋升到老年代中。
+     * 对象晋升老年代到阈值，可以通过参数：-XX:MaxTenuringThreshold设置
+     * <p/>
+     * VM Args:
+     *  -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8
+     *  -XX:MaxTenuringThreshold=1 -XX:+PrintTenuringDistribution
+     */
+    public static void testTenuringThreshold() {
+        byte[] allocation1, allocation2, allocation3;
+        // 什么时候进入老年代决定于XX:MaxTenuringThreshold=1
+        allocation1 = new byte[_1MB / 4];
+
+        allocation2 = new byte[4 * _1MB];
+        allocation3 = new byte[4 * _1MB];
+        allocation3 = null;
+        allocation3 = new byte[4 * _1MB];
+    }
+
     public static void main(String[] args) {
         // 对象优先在新生代Eden区分配
 //        testAllocation();
 
         // 大对象直接进入老年代
-        testPretenureSizeThreshold();
+//        testPretenureSizeThreshold();
+
+        // 长期存活的对象将进入老年代
+        testTenuringThreshold();
     }
 }
