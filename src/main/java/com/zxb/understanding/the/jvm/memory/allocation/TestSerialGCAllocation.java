@@ -77,6 +77,32 @@ public class TestSerialGCAllocation {
         allocation3 = new byte[4 * _1MB];
     }
 
+    /**
+     * 动态对象年龄判定：
+     *   为了更好地适应不同程序的内存状况，HotSpot虚拟机并不是强制要求对象的年龄必须达到-XX:MaxTenuringThreshold才能晋升老年代，
+     *   如果在Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，
+     *   无须等到阈值要求的年龄。
+     * <p/>
+     * VM Args:
+     *  -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8
+     *  -XX:MaxTenuringThreshold=15 -XX:+PrintTenuringDistribution
+     */
+    public static void testTenuringThreshold2() {
+        byte[] allocation1, allocation2, allocation3, allocation4;
+        // allocation1 + allocation2 大于 Survivor空间一半
+        // from space 为 0% used
+        // 1和2直接进入了老年代，并没有到达15岁的临界年龄，因为这2个对象加起来是512KB，并且是同龄的
+        // 满足同年对象达到Survivor空间一半的规则
+        allocation1 = new byte[_1MB / 4];
+        allocation2 = new byte[_1MB / 4];
+
+        allocation3 = new byte[4 * _1MB];
+        allocation4 = new byte[4 * _1MB];
+
+        allocation4 = null;
+        allocation4 = new byte[4 * _1MB];
+    }
+
     public static void main(String[] args) {
         // 对象优先在新生代Eden区分配
 //        testAllocation();
@@ -85,6 +111,9 @@ public class TestSerialGCAllocation {
 //        testPretenureSizeThreshold();
 
         // 长期存活的对象将进入老年代
-        testTenuringThreshold();
+//        testTenuringThreshold();
+
+        // 动态对象年龄判定
+        testTenuringThreshold2();
     }
 }
