@@ -12,6 +12,7 @@ public class TestSerialGCAllocation {
 
     /**
      * 对象优先在Eden分配，大多是情况下，对象在新生代Eden区中分配，当Eden空间没有足够的空间进行分配时，虚拟机将发起一次MinorGC
+     * <p/>
      * VM Args:
      *      -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8
      *      -Xms20M -Xmx20M -Xmn10M这三个参数限制了Java堆大小为20MB，不可扩展，其中10MB分配给新生代，剩下10MB分配给老年代
@@ -31,7 +32,33 @@ public class TestSerialGCAllocation {
         allocation4 = new byte[4 * _1MB];
     }
 
+    /**
+     * 大对象直接进入老年代
+     * <p/>
+     * 大对象就是指需要大量连续内存空间的Java对象，典型的大对象：很长的字符串或者元素数量很大的数组。
+     * 在编程中尽可能避免"短命的大对象"，否则会频繁触发GC，意味着高额的内存开销。
+     * HotSpot虚拟机提供 -XX:PretenureSizeThreshold参数，指定大于该设置的值的对象直接在老年代分配，这样就避免在
+     * Eden区以及两个Survivor区之间来回复制，产生大量的内存复制操作。
+     * 注意：-XX:PretenureSizeThreshold 参数只对 Serial和ParNew两款新生代收集器有效，若要使用该参数进行调优，
+     * 可以考虑ParNew+CMS的收集器组合
+     * <p/>
+     * VM Args:
+     *      -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8
+     *      -XX:PretenureSizeThreshold=3145728
+     *      3MB = 3 * 1024 * 1024 = 3145728
+     */
+    public static void testPretenureSizeThreshold() {
+        byte[] allocation;
+        // 直接分配在老年代
+        // tenured generation   total 10240K, used 4096K
+        allocation = new byte[4 * _1MB];
+    }
+
     public static void main(String[] args) {
-        testAllocation();
+        // 对象优先在新生代Eden区分配
+//        testAllocation();
+
+        // 大对象直接进入老年代
+        testPretenureSizeThreshold();
     }
 }
