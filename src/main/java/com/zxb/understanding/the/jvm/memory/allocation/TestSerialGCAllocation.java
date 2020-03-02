@@ -103,6 +103,29 @@ public class TestSerialGCAllocation {
         allocation4 = new byte[4 * _1MB];
     }
 
+    /**
+     * 空间分配担保：
+     *   在发生MinorGC之前，虚拟机必须先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果这个条件成立，那这一次MinorGC
+     *   可用确保是安全的。只要老年代的连续空间大于新生代对象总大小或者历次晋升的平均大小，就会进行MinorGC，否则进行Full GC
+     * VM Args:
+     *      -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8
+     *      -XX:-HandlePromotionFailure  （JDK6才有效）
+     */
+    public static void testHandlePromotion() {
+        byte[] allocation1, allocation2, allocation3, allocation4, allocation5, allocation6, allocation7;
+        allocation1 = new byte[2 * _1MB];
+        allocation2 = new byte[2 * _1MB];
+        allocation3 = new byte[2 * _1MB];
+        allocation1 = null;
+        allocation4 = new byte[2 * _1MB];
+        allocation5 = new byte[2 * _1MB];
+        allocation6 = new byte[2 * _1MB];
+        allocation4 = null;
+        allocation5 = null;
+        allocation6 = null;
+        allocation7 = new byte[2 * _1MB];
+    }
+
     public static void main(String[] args) {
         // 对象优先在新生代Eden区分配
 //        testAllocation();
@@ -114,6 +137,9 @@ public class TestSerialGCAllocation {
 //        testTenuringThreshold();
 
         // 动态对象年龄判定
-        testTenuringThreshold2();
+//        testTenuringThreshold2();
+
+        // 空间分配担保
+        testHandlePromotion();
     }
 }
