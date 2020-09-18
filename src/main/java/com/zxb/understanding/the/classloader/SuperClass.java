@@ -13,10 +13,4 @@ public class SuperClass {
     }
 
     public static int value = 123;
-
-    static class SubClass extends SuperClass {
-        static {
-            System.out.println("Sup Class Initialization.");
-        }
-    }
 }

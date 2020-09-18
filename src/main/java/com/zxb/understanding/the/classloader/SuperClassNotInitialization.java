@@ -9,6 +9,6 @@ package com.zxb.understanding.the.classloader;
  */
 public class SuperClassNotInitialization {
     public static void main(String[] args) {
-        System.out.println(SuperClass.SubClass.value);
+        System.out.println(SubClass.value);
     }
 }

@@ -18,6 +18,10 @@ public class JavaVmThreadStackOom {
         LockSupport.park();
     }
 
+    private void test() {
+        byte[] bytes = new byte[1024 * 1024];
+    }
+
     public void stackLeakByThread() {
         while (true) {
             i++;
